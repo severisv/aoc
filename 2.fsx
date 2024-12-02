@@ -15,9 +15,8 @@ let getErrorCount prev current dir =
 
 let trd (_, _, x) = x
 
-let countErrors list =
-    list
-    |> List.fold (fun (prevItem, dir, errorCount) item -> 
+let countErrors =
+    List.fold (fun (prevItem, dir, errorCount) item -> 
         let (dir, newErrorCount) = 
             match (prevItem, dir) with
             | (None, None) -> None, 0
@@ -29,7 +28,7 @@ let countErrors list =
 
         (Some item, dir, newErrorCount)
     ) (None, None, 0)
-    |> trd
+    >> trd
 
 // Part 1
 input 
