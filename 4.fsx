@@ -21,15 +21,26 @@ let parse item word count =
 
 
 
-type Direction = Right | Left
-let tryGet dir i i1 i2 = 
+type Direction = DownRight | DownLeft
+let tryGet i1 i2 = 
     try 
-        Some input.[i1+i].[i2 + (match dir with | Right -> i | Left -> -i)]
+        Some input.[i1].[i2]
     with | _ -> None
 
-let traverse dir iMax i1 i2 = [0 .. iMax] 
-                             |> List.map (tryGet dir i1 i2) |> List.choose id
 
+
+let rec go dir i1 i2 acc =
+    let item = tryGet i1 i2
+    match item with
+    | Some item -> 
+        let i2 =  (match dir with | DownRight -> i2 + 1 | DownLeft -> i2 - 1)
+        go dir (i1+1) i2 (acc @ [item])
+    | None -> 
+        acc
+
+let traverse dir i1 i2 =
+            go dir i1 i2 []
+            
 
 let countRow row = 
         let result =
@@ -59,14 +70,13 @@ let diagonal =
     |> List.mapi (fun i1 values  -> 
                         values |> List.mapi (fun i2 _ ->  
                             let iMax = input.Length - 1
-                            let traverseLeft = traverse Left iMax
-                            let traverseRight = traverse Right iMax
                             match i1, i2 with
-                            | 0, i2 -> (traverseRight i1 i2) @ (traverseLeft i1 i2)
+                            | 0, i2 -> (traverse DownRight i1 i2) @ (traverse DownLeft i1 i2)
                             | i1, 0 ->
-                                   (traverseRight i1 i2)
+                                   (traverse DownRight i1 i2)
                             | i1, i2 when i2 = iMax ->
-                                   (traverseLeft i1 i2)
+                                    (traverse DownLeft i1 i2)
+                                   
                             | _, _ -> []
                             
                         ))
@@ -75,6 +85,9 @@ let diagonal =
 
 
 
+// Part 1
 printf "%i "(count diagonal + count vertical + count horizontal)
+
+
 
 
