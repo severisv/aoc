@@ -8,15 +8,15 @@ let input = System.IO.File.ReadAllLines "4.txt"
 
 
 
-let parse item word count =
-    match item, word with
-    | "S", "" -> "S", count
-    | "A", "S" -> "SA", count
-    | "M", "SA" -> "SAM", count
-    | "X", "SAM" -> "SAMX", count + 1
-    | _ -> "", count
+let parse item acc count =
+    match item, acc with
+    | "X", _ -> "X", count
+    | "M", "X" -> "XM", count
+    | "A", "XM" -> "XMA", count
+    | "S", "XMA" -> "", count + 1
+    | _, _ -> "", count
 
-
+  
 
 
 
@@ -51,9 +51,9 @@ let countRow row =
                             parse item word count) ("", 0) |> snd)
         result
     
-let count input  = 
-    input |> List.map (countRow)
-    |> List.sum
+let count  = 
+    List.map countRow
+    >> List.sum
 
 
 
